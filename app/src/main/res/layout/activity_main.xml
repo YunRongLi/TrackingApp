@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <org.opencv.android.JavaCameraView
+        android:id="@+id/javaCameraView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true" />
+
+    <RelativeLayout
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:id="@+id/Relative1">
+
+        <ImageButton
+            android:id="@+id/SetTrackingMethod"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="32dp"
+            android:background="@drawable/shape"
+            android:rotation="90"
+            android:src="@mipmap/buttonsliders">
+        </ImageButton>
+
+        <ImageButton
+            android:id="@+id/StartCapture"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/shape"
+            android:src="@mipmap/buttoncamera">
+        </ImageButton>
+
+        <ImageButton
+            android:id="@+id/PauseCapture"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_above="@+id/StartCapture"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="29dp"
+            android:background="@drawable/shape"
+            android:src="@mipmap/buttonpause">
+        </ImageButton>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/Relative2"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@id/Relative1"
+        android:background="#000000">
+
+        <ImageButton
+            android:id="@+id/ImageButtonSelectUp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="5dp"
+            android:src="@mipmap/up"
+            />
+
+        <ImageButton
+            android:id="@+id/ImageButtonSelectDown"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="5dp"
+            android:src="@mipmap/down" />
+
+        <TextView
+            android:id="@+id/TextviewParam"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:gravity="center_vertical"
+            android:text="TM"
+            android:textSize="24dp"
+            android:textAlignment="center"/>
+
+        <TextView
+            android:id="@+id/TextviewValue"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_toLeftOf="@id/ImageButtonSelectDown"
+            android:layout_alignParentBottom="true"
+            android:textSize="24dp"
+            android:textAlignment="center"
+            android:gravity="center_vertical"/>
+
+        <Spinner
+            android:id="@+id/SpinnerSelectMethod"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_toLeftOf="@id/ImageButtonSelectUp">
+        </Spinner>
+
+        <SeekBar
+            android:id="@+id/SeekBarParam"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_alignParentBottom="true"
+            android:layout_toEndOf="@+id/TextviewParam"
+            android:layout_toStartOf="@id/TextviewValue"
+            style="@style/Widget.AppCompat.SeekBar.Discrete"/>
+    </RelativeLayout>
+
+</RelativeLayout>
