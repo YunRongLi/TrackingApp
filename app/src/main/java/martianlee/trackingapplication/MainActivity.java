@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -27,6 +28,7 @@ import org.opencv.android.JavaCameraView;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 
+import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Point;
@@ -48,13 +50,13 @@ enum CamShiftParamNum{
 
 public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2 {
     ImageButton m_ImageButton_SetTrackingMethod;
-    ImageButton m_ImageButton_StartCapture;
     ImageButton m_ImageButton_PauseCapture;
     ImageButton m_ImageButton_SelectMethodUp;
     ImageButton m_ImageButton_SelectMethodDown;
+    Button m_Button_ImageSwitch;
+
     TextView m_TextView_Param;
     TextView m_TextView_Value;
-    Handler m_Seekbar_Handler = new Handler();
     SeekBar m_SeekBar_Param;
     Spinner m_Spinner_SelectMethod;
     RelativeLayout m_Relative2;
@@ -63,16 +65,17 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     MeanShiftParamNum MsParamNum = MeanShiftParamNum.hmin;
     CamShiftParamNum CsParamNum = CamShiftParamNum.hmin;
 
-    private VT_Params m_Param = new VT_Params();
+    Core.MinMaxLocResult minmaxlocresult;
 
+    private VT_Params m_Param = new VT_Params();
     private CVisualTracker cvisualtracker = new CVisualTracker();
 
     boolean TrackingSetState;
     boolean m_SeekbarTounching = false;
     Mat mRgba;
+    Mat mGray;
 
     private Rect TrackRect = new Rect();
-
     private Point m_Origin = new Point();
     private Point m_Current = new Point();
 
@@ -108,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         setContentView(R.layout.activity_main);
 
         m_ImageButton_SetTrackingMethod = (ImageButton) findViewById(R.id.SetTrackingMethod);
-        m_ImageButton_StartCapture = (ImageButton) findViewById(R.id.StartCapture);
+        m_Button_ImageSwitch = (Button) findViewById(R.id.ImageSwitch);
         m_ImageButton_PauseCapture = (ImageButton) findViewById(R.id.PauseCapture);
 
         m_ImageButton_SelectMethodUp = (ImageButton) findViewById(R.id.ImageButtonSelectUp);
@@ -128,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
         javaCameraView = (JavaCameraView) findViewById(R.id.javaCameraView);
         javaCameraView.setCvCameraViewListener(this);
-
+        javaCameraView.setMaxFrameSize(640, 480);
     }
 
     @Override
@@ -159,21 +162,22 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
                 m_MotionEvent = 0;
-                m_Origin.x = event.getX();
-                m_Origin.y = event.getY();
+                m_Origin.x = event.getX() * 640 / 1920;
+                m_Origin.y = event.getY() * 480 / 1080;
                 break;
             case MotionEvent.ACTION_MOVE:
                 m_MotionEvent = 1;
-                m_Current.x = event.getX();
-                m_Current.y = event.getY();
+                m_Current.x = event.getX() * 640 / 1920;
+                m_Current.y = event.getY() * 480 / 1080;
                 break;
             case MotionEvent.ACTION_UP:
                 m_MotionEvent = 2;
 
                 TrackRect.x = (int) m_Origin.x;
                 TrackRect.y = (int) m_Origin.y;
-                TrackRect.height = Math.abs((int) event.getX() - (int) m_Origin.x);
-                TrackRect.width  = Math.abs((int) event.getY() - (int) m_Origin.y);
+                TrackRect.width  = Math.abs((int) event.getX() * 640 / 1920 - (int) m_Origin.x);
+                TrackRect.height = Math.abs((int) event.getY() * 480 / 1080 - (int) m_Origin.y);
+                cvisualtracker.SetROI(mRgba, TrackRect);
                 break;
             default:
                 break;
@@ -237,18 +241,20 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
             }
         });
 
-        m_ImageButton_StartCapture.setOnClickListener(new View.OnClickListener() {
+        m_Button_ImageSwitch.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-//                if(ccapturestate  == CCaptureState.STOPCAPTURE) {
-//                    m_ImageButton_StartCapture.setImageResource(R.mipmap.stop);
-//                    ccapturestate = CCaptureState.STARTCAPTURE;
-//
-//                }
-//                else{
-//                    m_ImageButton_StartCapture.setImageResource(R.mipmap.buttoncamera);
-//                    ccapturestate = CCaptureState.STOPCAPTURE;
-//                }
+            public void onClick(View v) {
+                String text;
+                if(!cvisualtracker.GetImageSwitch()){
+                    text = "RGB";
+                    m_Button_ImageSwitch.setText(text);
+                    cvisualtracker.SetImageBackProj();
+                }
+                else {
+                    text = "反投影";
+                    m_Button_ImageSwitch.setText(text);
+                    cvisualtracker.SetImageRGB();
+                }
             }
         });
 
@@ -569,23 +575,33 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
 
     @Override
     public void onCameraViewStarted(int width, int height) {
-        mRgba = new Mat(height, width, CvType.CV_8UC4);
+        mRgba = new Mat(width, height, CvType.CV_8UC4);
+        mGray = new Mat(width, height, CvType.CV_8UC1);
     }
 
     @Override
     public void onCameraViewStopped() {
         mRgba.release();
+        mGray.release();
     }
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        mRgba = inputFrame.rgba();
+        mRgba  = inputFrame.rgba();
+        mGray  = inputFrame.gray();
 
         if(m_MotionEvent == 1){
             Imgproc.rectangle(mRgba, m_Origin, m_Current, new Scalar(255, 255, 255), 2);
         }
         if(m_MotionEvent == 2){
-            Imgproc.rectangle(mRgba, m_Origin, m_Current, new Scalar(255, 255, 255), 2);
+            if(cvisualtracker.Tracking(mRgba, TrackRect)){
+                if(cvisualtracker.GetImageSwitch()){
+                    return cvisualtracker.ShowBackproj();
+                }
+                else{
+                    return cvisualtracker.ShowResult(mRgba, TrackRect);
+                }
+            }
         }
 
         return mRgba;

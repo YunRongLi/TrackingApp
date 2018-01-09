@@ -32,21 +32,22 @@
             android:src="@mipmap/buttonsliders">
         </ImageButton>
 
-        <ImageButton
-            android:id="@+id/StartCapture"
+        <Button
+            android:id="@+id/ImageSwitch"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:background="@drawable/shape"
-            android:src="@mipmap/buttoncamera">
-        </ImageButton>
+            android:text="反投影"
+            android:textSize="24dp">
+        </Button>
 
         <ImageButton
             android:id="@+id/PauseCapture"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_above="@+id/StartCapture"
+            android:layout_above="@+id/ImageSwitch"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="29dp"
             android:background="@drawable/shape"
