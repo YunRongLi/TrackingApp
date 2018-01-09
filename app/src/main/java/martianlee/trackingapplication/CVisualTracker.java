@@ -67,7 +67,7 @@ class VT_Params {
 
 public class CVisualTracker {
     static {
-        System.loadLibrary("imgCanny");
+        System.loadLibrary("CVisualTracker");
     }
 
     private VT_Method_Type m_CurType;
@@ -267,6 +267,7 @@ public class CVisualTracker {
         m_range.fromArray(m_hmin, m_hmax);
 
         Imgproc.calcHist(m_hueROIList, m_Channel, m_maskROI, this.m_hist, this.m_hsize, m_range);
+
     }
 
     public void SetImageBackProj(){
@@ -281,7 +282,6 @@ public class CVisualTracker {
         return m_ImageSwitch;
     }
 
-//    /////////////////////////////////
     public void SetMethodType(VT_Method_Type Type){
         this.m_CurType = Type;
     }
@@ -305,6 +305,7 @@ public class CVisualTracker {
                 break;
         }
     }
+
     public VT_Params GetVT_Params(){
         return this.m_CurParams;
     }

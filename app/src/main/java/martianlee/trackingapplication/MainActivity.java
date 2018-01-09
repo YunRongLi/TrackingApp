@@ -61,11 +61,8 @@ public class MainActivity extends AppCompatActivity implements CameraBridgeViewB
     Spinner m_Spinner_SelectMethod;
     RelativeLayout m_Relative2;
 
-    TemplateMatchParamNum TMParamNum = TemplateMatchParamNum.TM;
     MeanShiftParamNum MsParamNum = MeanShiftParamNum.hmin;
     CamShiftParamNum CsParamNum = CamShiftParamNum.hmin;
-
-    Core.MinMaxLocResult minmaxlocresult;
 
     private VT_Params m_Param = new VT_Params();
     private CVisualTracker cvisualtracker = new CVisualTracker();
