@@ -36,10 +36,6 @@ import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
 
-enum TemplateMatchParamNum{
-    TM
-}
-
 enum MeanShiftParamNum{
     hmin, hmax, vmin, vmax
 }

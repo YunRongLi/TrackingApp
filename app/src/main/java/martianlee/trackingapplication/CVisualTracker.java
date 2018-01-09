@@ -69,7 +69,7 @@ public class CVisualTracker {
     static {
         System.loadLibrary("CVisualTracker");
     }
-
+    private int dsfs;
     private VT_Method_Type m_CurType;
     private VT_Params m_CurParams;
 
